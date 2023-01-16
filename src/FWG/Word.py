@@ -26,7 +26,7 @@ class W:
         self.count+=n
 
     def add_comment_id(self, n):
-        for id in self.comment_id:
+        for id in n:
             if id not in self.comment_id:
                 self.comment_id.append(id)
 
@@ -47,8 +47,8 @@ class W:
         return self.lemma+"_"+self.POS+"_"+str(self.count)
 
 class Word(W):
-    def __init__(self, token, lemma, POS, lexical_name=False, concepts_config=None):
-        super(Word, self).__init__(token, lemma, POS)
+    def __init__(self, token, lemma, POS, comment_id, lexical_name=False, concepts_config=None):
+        super(Word, self).__init__(token, lemma, POS, comment_id)
 
         if lexical_name:
             self.get_lexical_name()
@@ -57,7 +57,7 @@ class Word(W):
             self.get_concepts(concepts_config.num, concepts_config.layers, concepts_config.cache_path, concepts_config.probase)
 
     def json_info(self):
-        return {"token": self.tokens, "lemma": self.lemma, "POS": self.POS, "count": self.count, "WN_laxical_names": self.WN_laxical_names, 
+        return {"token": self.tokens, "lemma": self.lemma, "POS": self.POS, "count": self.count, "WN_laxical_names": self.WN_laxical_names, "comment_id": self.comment_id,
                 "vecs":self.vecs, "top_concept": self.top_concept, "key_concept_chain": self.key_concept_chain, "key_concepts": self.key_concepts}
 
     def we_vec(self, name, vec):
@@ -73,8 +73,8 @@ class Word(W):
         return json.dumps(self.json_info(), indent=4)
 
 class Ngram(W):
-    def __init__(self, token, lemma, root, POS, N, lexical_name=False, concepts_config=None):
-        super(Ngram, self).__init__(token, lemma, POS)
+    def __init__(self, token, lemma, root, POS, N, comment_id, lexical_name=False, concepts_config=None):
+        super(Ngram, self).__init__(token, lemma, POS, comment_id)
         self.root = root
         self.N = N
 
@@ -85,7 +85,7 @@ class Ngram(W):
             self.get_concepts(concepts_config.num, concepts_config.layers, concepts_config.cache_path, concepts_config.probase)
 
     def json_info(self):
-        return {"token": self.tokens, "lemma": self.lemma, "POS": self.POS, "root": self.root, "N": self.N, "WN_laxical_names": self.WN_laxical_names,
+        return {"token": self.tokens, "lemma": self.lemma, "POS": self.POS, "root": self.root, "N": self.N, "WN_laxical_names": self.WN_laxical_names, "comment_id": self.comment_id,
                 "count": self.count, "vecs":self.vecs, "top_concept": self.top_concept, "key_concept_chain": self.key_concept_chain, "key_concepts": self.key_concepts}
 
     def we_vec(self, name, vecs, method="average"):

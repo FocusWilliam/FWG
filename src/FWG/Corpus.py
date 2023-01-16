@@ -9,8 +9,8 @@ class Corpus:
         self.comments = []
         Words = Word.Word_list()
         Ngram = Word.Word_list()
-        for comm in tqdm(comments):
-            new_comment = Comment.Comment(comm, nlp_model, POS_candidate, lexical_name, concepts_config)
+        for index, comm in enumerate(tqdm(comments)):
+            new_comment = Comment.Comment(comm, nlp_model, index, POS_candidate, lexical_name, concepts_config)
             self.comments.append(new_comment)
             for i in new_comment.Words.content:
                 Words.append(i, deepcopy=True)
