@@ -4,7 +4,7 @@ import json
 import numpy as np
 
 class W:
-    def __init__(self, token, lemma, POS):
+    def __init__(self, token, lemma, POS, comment_id):
         self.POS = POS
         self.tokens = [token]
         self.lemma = lemma
@@ -20,8 +20,15 @@ class W:
         # laxical names in wordnet
         self.WN_laxical_names = []
 
+        self.comment_id = [comment_id]
+
     def add_count(self, n):
-        self.count+=n 
+        self.count+=n
+
+    def add_comment_id(self, n):
+        for id in self.comment_id:
+            if id not in self.comment_id:
+                self.comment_id.append(id)
 
     def add_tokens(self, tokens):
         for token in tokens:
@@ -124,6 +131,7 @@ class Word_list:
             x = self.content.index(word)
             self.content[x].add_count(word.count)
             self.content[x].add_tokens(word.tokens)
+            self.content[x].add_comment_id(word.comment_id)
 
     def json_info(self):
         return [i.json_info() for i in self.content]
