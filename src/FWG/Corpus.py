@@ -40,7 +40,7 @@ class Corpus:
         else:
             Kkit.store_result(path, self.FD)
 
-    def assement_FD(self, ground_truth):
+    def assess_FD(self, ground_truth):
         pass
     
     def concept_filter(self, path=None):

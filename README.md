@@ -23,3 +23,32 @@ print(c.FD)
 
 print(c.comments)
 ```
+
+## todo
+
+- [ ] Finish Corpus.py
+
+  - [ ] assess_FD()
+
+  - [ ] frequency_filter()
+
+  - [ ] static_key_concept()
+
+  - [ ] gen_td_vec()
+
+  - [ ] gen_PCA_vec()
+
+  - [ ] gen_CA_vec()
+
+  - [ ] gen_tc_vec()
+
+  - [ ] gen_GloVe_vec()
+
+  - [ ] custom_vec()
+
+- [ ] Finish display.py: for more good visualisation of FD extraction
+
+FInished:
+
+- POS filter
+- concept filter
