@@ -20,15 +20,17 @@ class W:
         # laxical names in wordnet
         self.WN_laxical_names = []
 
-        self.comment_id = [comment_id]
+        self.comment_id = {comment_id: 1}
 
     def add_count(self, n):
         self.count+=n
 
     def add_comment_id(self, n):
-        for id in n:
+        for id, count in n.items():
             if id not in self.comment_id:
-                self.comment_id.append(id)
+                self.comment_id[id] = count
+            else:
+                self.comment_id[id] += count
 
     def add_tokens(self, tokens):
         for token in tokens:
@@ -39,6 +41,12 @@ class W:
         self.top_concept = utils.get_concept_prob(self.lemma, num=num, cache_path=cache_path, probase=probase)
         self.key_concept_chain = utils.build_key_concept_chain(self.lemma, layers, cache_path = "./MCG", probase = probase)
         self.key_concepts = list(set([i[-1] for i in self.key_concept_chain]))
+
+    def we_vec(self, name, vec):
+        if isinstance(vec, np.ndarray) == False:
+            print("vec class error, vec must be numpy.ndarray")
+            return
+        self.vecs[name] = vec
 
     def __eq__(self,other):
         return self.POS==other.POS and self.lemma==other.lemma
@@ -59,12 +67,6 @@ class Word(W):
     def json_info(self):
         return {"token": self.tokens, "lemma": self.lemma, "POS": self.POS, "count": self.count, "WN_laxical_names": self.WN_laxical_names, "comment_id": self.comment_id,
                 "vecs":self.vecs, "top_concept": self.top_concept, "key_concept_chain": self.key_concept_chain, "key_concepts": self.key_concepts}
-
-    def we_vec(self, name, vec):
-        if isinstance(vec, np.ndarray) == False:
-            print("vec class error, vec must be numpy.ndarray")
-            return
-        self.vecs[name] = vec
 
     def get_lexical_name(self):
         self.WN_laxical_names = utils.get_lexical_file_name(self.lemma)
@@ -88,17 +90,17 @@ class Ngram(W):
         return {"token": self.tokens, "lemma": self.lemma, "POS": self.POS, "root": self.root, "N": self.N, "WN_laxical_names": self.WN_laxical_names, "comment_id": self.comment_id,
                 "count": self.count, "vecs":self.vecs, "top_concept": self.top_concept, "key_concept_chain": self.key_concept_chain, "key_concepts": self.key_concepts}
 
-    def we_vec(self, name, vecs, method="average"):
-        for vec in vecs:
-            if isinstance(vec, np.ndarray) == False:
-                print("vec class error, vec must be numpy.ndarray")
-                return
-        final_vec = np.zeros(vecs[0].shpae)
-        if method=="average":
-            for vec in vecs:
-                final_vec += vec
-            final_vec = final_vec/len(vecs)
-        self.vecs[name] = final_vec
+    # def we_vec(self, name, vecs, method="average"):
+    #     for vec in vecs:
+    #         if isinstance(vec, np.ndarray) == False:
+    #             print("vec class error, vec must be numpy.ndarray")
+    #             return
+    #     final_vec = np.zeros(vecs[0].shpae)
+    #     if method=="average":
+    #         for vec in vecs:
+    #             final_vec += vec
+    #         final_vec = final_vec/len(vecs)
+    #     self.vecs[name] = final_vec
 
     # def get_concepts(self, num, cache_path = "./MCG", probase = None):
     #     concept = utils.get_concept_prob(self.lemma, num=num, cache_path=cache_path, probase=probase)
@@ -136,6 +138,9 @@ class Word_list:
     def json_info(self):
         return [i.json_info() for i in self.content]
 
+    def to_list(self):
+        return [i.lemma for i in self.content]
+
     def __add__(self, other):
         new_word_list = Word_list(self.content + other.content)
         return new_word_list
@@ -145,3 +150,6 @@ class Word_list:
 
     def __str__(self):
         return json.dumps(self.json_info(), indent=4)
+
+    def __len__(self):
+        return len(self.content)

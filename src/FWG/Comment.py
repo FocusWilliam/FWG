@@ -6,6 +6,7 @@ import json
 class Comment:
     def __init__(self, string, nlp_model, comment_id, POS_candidate=["NN", "JJ", "phrase"], lexical_name=False, concepts_config=None):
         self.string = string
+        self.comment_id = comment_id
         self.Words = Word.Word_list()
         self.Ngram = Word.Word_list()
 
@@ -45,4 +46,7 @@ class Comment:
         return {"comment_text": self.string, "words": self.Words.json_info(), "Ngram": self.Ngram.json_info()}
 
     def __str__(self):
-        return json.dumps(self.json_info(), indent=4) 
+        return json.dumps(self.json_info(), indent=4)
+
+    def __repr__(self):
+        return "FWG.Comment(id=%d, len(Ngram)=%d, len(Word)=%d)"%(self.comment_id, len(self.Ngram), len(self.Words))

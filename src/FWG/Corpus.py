@@ -38,14 +38,41 @@ class Corpus:
             str_json = json.dumps(json_info, indent=4)
             with open(path, "w") as f:
                 f.write(str_json)
+
+    def assement_FD(self, ground_truth):
+        pass
     
-    def concept_filter(self):
+    def concept_filter(self, path, bi=True):
         pass
     
     def frequency_filter(self):
         pass
 
     def spell_filter(self):
+        pass
+
+    def gen_td_vec(self):
+    # token-document frequency matrix
+        pass
+
+    def gen_PCA_vec(self):
+    # using PCA de-dimension td vec
+        pass
+
+    def gen_CA_vec(self):
+    # # using CA de-dimension td vec
+        pass
+
+    def gen_tc_vec(self):
+    # token-concept probability matrix
+        pass
+
+    def gen_GloVe_vec(self):
+    # GloVe vector:
+        pass
+
+    def custom_vec(self, token_vec_map):
+    # customized vector
         pass
 
 class Corpus_reload(Corpus):
