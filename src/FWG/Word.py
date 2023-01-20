@@ -39,7 +39,7 @@ class W:
 
     def get_concepts(self, num, layers, cache_path = "./cache/MCG", probase = None):
         self.top_concept = utils.get_concept_prob(self.lemma, num=num, cache_path=cache_path, probase=probase)
-        self.key_concept_chain = utils.build_key_concept_chain(self.lemma, layers, cache_path = "./MCG", probase = probase)
+        self.key_concept_chain = utils.build_key_concept_chain(self.lemma, layers, cache_path=cache_path, probase = probase)
         self.key_concepts = list(set([i[-1] for i in self.key_concept_chain]))
 
     def we_vec(self, name, vec):
@@ -47,6 +47,9 @@ class W:
             print("vec class error, vec must be numpy.ndarray")
             return
         self.vecs[name] = vec
+
+    def json_info(self):
+        return self.__dict__
 
     def __eq__(self,other):
         return self.POS==other.POS and self.lemma==other.lemma
@@ -64,9 +67,9 @@ class Word(W):
         if concepts_config!=None:
             self.get_concepts(concepts_config.num, concepts_config.layers, concepts_config.cache_path, concepts_config.probase)
 
-    def json_info(self):
-        return {"token": self.tokens, "lemma": self.lemma, "POS": self.POS, "count": self.count, "WN_laxical_names": self.WN_laxical_names, "comment_id": self.comment_id,
-                "vecs":self.vecs, "top_concept": self.top_concept, "key_concept_chain": self.key_concept_chain, "key_concepts": self.key_concepts}
+    # def json_info(self):
+    #     return {"token": self.tokens, "lemma": self.lemma, "POS": self.POS, "count": self.count, "WN_laxical_names": self.WN_laxical_names, "comment_id": self.comment_id,
+    #             "vecs":self.vecs, "top_concept": self.top_concept, "key_concept_chain": self.key_concept_chain, "key_concepts": self.key_concepts}
 
     def get_lexical_name(self):
         self.WN_laxical_names = utils.get_lexical_file_name(self.lemma)
@@ -86,9 +89,9 @@ class Ngram(W):
         if concepts_config!=None:
             self.get_concepts(concepts_config.num, concepts_config.layers, concepts_config.cache_path, concepts_config.probase)
 
-    def json_info(self):
-        return {"token": self.tokens, "lemma": self.lemma, "POS": self.POS, "root": self.root, "N": self.N, "WN_laxical_names": self.WN_laxical_names, "comment_id": self.comment_id,
-                "count": self.count, "vecs":self.vecs, "top_concept": self.top_concept, "key_concept_chain": self.key_concept_chain, "key_concepts": self.key_concepts}
+    # def json_info(self):
+        # return {"token": self.tokens, "lemma": self.lemma, "POS": self.POS, "root": self.root, "N": self.N, "WN_laxical_names": self.WN_laxical_names, "comment_id": self.comment_id,
+        #         "count": self.count, "vecs":self.vecs, "top_concept": self.top_concept, "key_concept_chain": self.key_concept_chain, "key_concepts": self.key_concepts}
 
     # def we_vec(self, name, vecs, method="average"):
     #     for vec in vecs:
@@ -113,6 +116,16 @@ class Ngram(W):
     
     def __str__(self):
         return json.dumps(self.json_info(), indent=4)
+
+class Word_reload(Word):
+    def __init__(self, json_dic):
+        for k,v in json_dic.items():
+            self.__dict__[k] = v
+
+class Ngram_reload(Ngram):
+    def __init__(self, json_dic):
+        for k,v in json_dic.items():
+            self.__dict__[k] = v
 
 class Word_list:
     def __init__(self, words=None):
@@ -153,3 +166,12 @@ class Word_list:
 
     def __len__(self):
         return len(self.content)
+
+class Word_list_reload(Word_list):
+    def __init__(self, json_dic):
+        self.content = []
+        for i in json_dic:
+            if "N" in i:
+                self.content.append(Ngram_reload(i))
+            else:
+                self.content.append(Word_reload(i))

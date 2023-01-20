@@ -43,10 +43,17 @@ class Comment:
         self.string = "".join(all_tokens)
 
     def json_info(self):
-        return {"comment_text": self.string, "words": self.Words.json_info(), "Ngram": self.Ngram.json_info()}
+        return {"string": self.string, "comment_id": self.comment_id, "Words": self.Words.json_info(), "Ngram": self.Ngram.json_info()}
 
     def __str__(self):
         return json.dumps(self.json_info(), indent=4)
 
     def __repr__(self):
         return "FWG.Comment(id=%d, len(Ngram)=%d, len(Word)=%d)"%(self.comment_id, len(self.Ngram), len(self.Words))
+
+class Comment_reload(Comment):
+    def __init__(self, json_dic):
+        self.string = json_dic["string"]
+        self.comment_id = json_dic["comment_id"]
+        self.Words = Word.Word_list_reload(json_dic["Words"])
+        self.Ngram = Word.Word_list_reload(json_dic["Ngram"])

@@ -19,8 +19,23 @@ class Corpus:
                 Ngram.append(i, deepcopy=True)
         self.FD = Words + Ngram
     
-    def static_key_concept(self):
-        pass
+    def static_key_concept(self, path=None):
+    # static key cincept count in self.FD
+        json_dic = {"empty_concepts": []}
+        for concept in utils.key_concepts:
+            temp = [i.json_info() for i in self.FD.content if concept in i.key_concepts]
+            if len(temp)==0:
+                json_dic["empty_concepts"].append(concept)
+            else:
+                temp = sorted(temp, key=lambda x: x["count"], reverse=True)
+                json_dic[concept] = temp
+        if path!=None:
+            if path.endswith("json"):
+                with open(path, "w") as f:
+                    f.write(json.dumps(json_dic))
+            else:
+                Kkit.store_result(path, json_dic)
+        return json_dic
 
     def save_comments(self, path):
         if path.endswith(".json"):
@@ -47,7 +62,7 @@ class Corpus:
         FD_after = Word.Word_list([word for word in self.FD.content if len(word.key_concepts)>0])
         if path!=None:
             filter_out = Word.Word_list([word for word in self.FD.content if len(word.key_concepts)==0])
-            archive = {"before_concept_filter": self.FD.json_info(), "after_concept_filter": FD_after.json_info(), "filter_out":filter_out.json_info()}
+            archive = {"before": self.FD.json_info(), "after": FD_after.json_info(), "filter_out":filter_out.json_info()}
             if path.endswith(".json"):
                 str_json = json.dumps(archive, indent=4)
                 with open(path, "w") as f:
@@ -65,7 +80,7 @@ class Corpus:
         FD_after = Word.Word_list([word for word in self.FD.content if dictionary.check(word.lemma)])
         if path!=None:
             filter_out = Word.Word_list([word for word in self.FD.content if dictionary.check(word.lemma)==False])
-            archive = {"before_spell_filter": self.FD.json_info(), "after_spell_filter": FD_after.json_info(), "filter_out":filter_out.json_info()}
+            archive = {"before": self.FD.json_info(), "after": FD_after.json_info(), "filter_out":filter_out.json_info()}
             if path.endswith(".json"):
                 str_json = json.dumps(archive, indent=4)
                 with open(path, "w") as f:
@@ -102,3 +117,12 @@ class Corpus_reload_bi(Corpus):
     def __init__(self, comments_path, FD_path):
         self.comments = Kkit.load_result(comments_path)
         self.FD = Kkit.load_result(FD_path)
+
+class Corpus_reload_json(Corpus):
+    def __init__(self, comments_path, FD_path):
+        with open(comments_path, "r") as f:
+            c = json.loads(f.read())
+            self.comments = Comment.Comment_reload(c)
+        with open(FD_path, "r") as f:
+            f = json.loads(f.read())
+            self.FD = Word.Word_list_reload(f)
