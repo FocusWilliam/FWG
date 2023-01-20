@@ -14,5 +14,5 @@ def visual_key_concept_statistics(json_dic, n_col_limit=3, linewidth=2, markersi
             x = [i["lemma"] for i in v]
             y = [i["count"] for i in v]
             plt.subplot(row, col, i)
-            plt.plot(x, y, "o", linewidth=linewidth, markersize=markersize)
+            plt.plot(x, y, "o-", linewidth=linewidth, markersize=markersize)
             plt.title(k)

@@ -26,6 +26,8 @@ print(c.comments)
 
 ## todo
 
+### Functions
+
 - [ ] Finish Corpus.py
 
   - [ ] assess_FD()
@@ -48,7 +50,11 @@ print(c.comments)
 
 - [ ] Finish display.py: for more good visualisation of FD extraction
 
-FInished:
+Finished:
 
 - POS filter
 - concept filter
+
+### test
+
+- [ ] test reload class
