@@ -31,29 +31,36 @@ class Corpus:
                 json_dic[concept] = temp
         if path!=None:
             if path.endswith("json"):
-                with open(path, "w") as f:
-                    f.write(json.dumps(json_dic))
+                # with open(path, "w") as f:
+                #     f.write(json.dumps(json_dic))
+                Kkit.store(path, json.dumps(json_dic, indent=4), encoding="utf-8")
             else:
-                Kkit.store_result(path, json_dic)
+                Kkit.store(path, json_dic)
         return json_dic
 
+    def archive(self, FD_path="./cache/comments.json", comments_path="./cache/FD.json"):
+        self.save_comments(comments_path)
+        self.save_FDs(FD_path)
+    
     def save_comments(self, path):
         if path.endswith(".json"):
             json_info = [i.json_info() for i in self.comments]
             str_json = json.dumps(json_info, indent=4)
-            with open(path, "w") as f:
-                f.write(str_json)
+            # with open(path, "w") as f:
+            #     f.write(str_json)
+            Kkit.store(path, str_json, encoding="utf-8")
         else:
-            Kkit.store_result(path, self.comments)
+            Kkit.store(path, self.comments)
 
     def save_FDs(self, path):
         if path.endswith(".json"):
             json_info = self.FD.json_info()
             str_json = json.dumps(json_info, indent=4)
-            with open(path, "w") as f:
-                f.write(str_json)
+            # with open(path, "w") as f:
+            #     f.write(str_json)
+            Kkit.store(path, str_json, encoding="utf-8")
         else:
-            Kkit.store_result(path, self.FD)
+            Kkit.store(path, self.FD)
 
     def assess_FD(self, ground_truth):
         pass
@@ -65,10 +72,11 @@ class Corpus:
             archive = {"before": self.FD.json_info(), "after": FD_after.json_info(), "filter_out":filter_out.json_info()}
             if path.endswith(".json"):
                 str_json = json.dumps(archive, indent=4)
-                with open(path, "w") as f:
-                    f.write(str_json)
+                # with open(path, "w") as f:
+                #     f.write(str_json)
+                Kkit.store(path, str_json, encoding="utf-8")
             else:
-                Kkit.store_result(path, archive)
+                Kkit.store(path, archive)
         self.FD = FD_after
     
     def frequency_filter(self, path=None):
@@ -86,7 +94,7 @@ class Corpus:
                 with open(path, "w") as f:
                     f.write(str_json)
             else:
-                Kkit.store_result(path, archive)
+                Kkit.store(path, archive)
         self.FD = FD_after
 
     def gen_td_vec(self):
@@ -115,14 +123,18 @@ class Corpus:
 
 class Corpus_reload_bi(Corpus):
     def __init__(self, comments_path, FD_path):
-        self.comments = Kkit.load_result(comments_path)
-        self.FD = Kkit.load_result(FD_path)
+        self.comments = Kkit.load(comments_path)
+        self.FD = Kkit.load(FD_path)
 
 class Corpus_reload_json(Corpus):
     def __init__(self, comments_path, FD_path):
-        with open(comments_path, "r") as f:
-            c = json.loads(f.read())
-            self.comments = Comment.Comment_reload(c)
+        # with open(comments_path, "r") as f:
+        #     c = json.loads(f.read(comments_path))
+        self.comments = []
+        comments = json.loads(Kkit.load(comments_path, encoding='utf-8'))
+        for c in comments:
+            comment = Comment.Comment_reload(c)
+            self.comments.append(comment)
         with open(FD_path, "r") as f:
             f = json.loads(f.read())
             self.FD = Word.Word_list_reload(f)

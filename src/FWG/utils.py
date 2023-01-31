@@ -10,6 +10,8 @@ import spacy
 import logging
 from . import Probase
 from . import Concepts
+import math
+from matplotlib import pyplot as plt
 
 stops = stopwords.words('english')
 
@@ -34,7 +36,7 @@ def init_enchant_Dict(dic="en", extra_legal_voca=True):
 
 def init_probase(path, binary=False):
     if binary:
-        probase = Kkit.load_result(path)
+        probase = Kkit.load(path)
     else:
         probase = Probase.ProbaseConcept(path)
     return probase
@@ -56,14 +58,14 @@ def get_concept_prob(word, num, cache_path = "./cache/MCG", probase = None) -> d
     except:
         os.makedirs(cache_path)
     if "%s_%d"%(word,num) in cache_list:
-        res = Kkit.load_result(os.path.join(cache_path, "%s_%d"%(word,num)))
+        res = Kkit.load(os.path.join(cache_path, "%s_%d"%(word,num)))
         return res
     else:
         if probase == None:
             link = requests.get("https://concept.research.microsoft.com/api/Concept/ScoreByProb?instance=%s&topK=%d"%(word, num), verify=False)
             if link.status_code == 200:
                 res = json.loads(link.text)
-                Kkit.store_result(os.path.join(cache_path,"%s_%d"%(word,num)),res)
+                Kkit.store(os.path.join(cache_path,"%s_%d"%(word,num)),res)
                 return res
             else:
                 raise Exception("code: %d"%link.status_code)
@@ -75,7 +77,7 @@ def get_concept_prob(word, num, cache_path = "./cache/MCG", probase = None) -> d
                 total+=i[1]
             for i in concept_list:
                 res[i[0]] = i[1]/total
-            Kkit.store_result(os.path.join(cache_path,"%s_%d"%(word,num)),res)
+            Kkit.store(os.path.join(cache_path,"%s_%d"%(word,num)),res)
             return res
 
 def build_key_concept_chain(word, layers, cache_path = "./cache/MCG", probase = None):
@@ -121,3 +123,19 @@ def add_star(string):
         return string.rstrip(" ")+"*"+" "
     else:
         return string+"*"
+
+def visual_key_concept_statistics(json_dic, n_col_limit=3):
+    num = len(json_dic.keys()) - 1
+    if num<=n_col_limit:
+        row = 1
+        col = num
+    else:
+        row = math.ceil(num/n_col_limit)
+        col = n_col_limit
+    for i, (k, v) in enumerate(json_dic.items()):
+        if k!="empty_concepts":
+            x = [i["lemma"] for i in v]
+            y = [i["count"] for i in v]
+            plt.subplot(row, col, i)
+            plt.bar(x, y)
+            plt.title(k)
