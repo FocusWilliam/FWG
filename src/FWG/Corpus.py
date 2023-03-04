@@ -4,6 +4,7 @@ from . import utils
 from tqdm import tqdm
 import Kkit
 import json
+import copy
 
 class Corpus:
     def __init__(self, comments, nlp_model, POS_candidate=["NN", "JJ", "phrase"], lexical_name=False, concepts_config=None):
@@ -65,7 +66,7 @@ class Corpus:
     def assess_FD(self, ground_truth):
         pass
     
-    def concept_filter(self, path=None):
+    def concept_filter(self, path=None, replace=True):
         FD_after = Word.Word_list([word for word in self.FD.content if len(word.key_concepts)>0])
         if path!=None:
             filter_out = Word.Word_list([word for word in self.FD.content if len(word.key_concepts)==0])
@@ -77,14 +78,20 @@ class Corpus:
                 Kkit.store(path, str_json, encoding="utf-8")
             else:
                 Kkit.store(path, archive)
-        self.FD = FD_after
+        if replace:
+            self.FD = FD_after
+            return self
+        else:
+            New_Corpus = copy.deepcopy(self)
+            New_Corpus.FD = FD_after
+            return New_Corpus
     
     def frequency_filter(self, path=None):
         # filter out low frequency words: how to define low frequency words?
         for kc in utils.key_concepts:
             pass
 
-    def spell_filter(self, dictionary, path=None):
+    def spell_filter(self, dictionary, path=None, replace=True):
         FD_after = Word.Word_list([word for word in self.FD.content if dictionary.check(word.lemma)])
         if path!=None:
             filter_out = Word.Word_list([word for word in self.FD.content if dictionary.check(word.lemma)==False])
@@ -95,7 +102,13 @@ class Corpus:
                     f.write(str_json)
             else:
                 Kkit.store(path, archive)
-        self.FD = FD_after
+        if replace:
+            self.FD = FD_after
+            return self
+        else:
+            New_Corpus = copy.deepcopy(self)
+            New_Corpus.FD = FD_after
+            return New_Corpus
 
     def gen_td_vec(self):
     # token-document frequency matrix
