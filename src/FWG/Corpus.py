@@ -5,6 +5,7 @@ from tqdm import tqdm
 import Kkit
 import json
 import copy
+import numpy as np
 
 class Corpus:
     def __init__(self, comments, nlp_model, POS_candidate=["NN", "JJ", "phrase"], lexical_name=False, concepts_config=None):
@@ -113,7 +114,12 @@ class Corpus:
 
     def gen_td_vec(self):
     # token-document frequency matrix
-        pass
+        for fd in self.FD.content:
+            temp_vec = np.zeros(len(self.comments))
+            for comment_id, count in fd.comment_id.items():
+                temp_vec[comment_id] = count
+            fd.we_vec("token-doc", temp_vec)
+        return self
 
     def gen_PCA_vec(self):
     # using PCA de-dimension td vec
