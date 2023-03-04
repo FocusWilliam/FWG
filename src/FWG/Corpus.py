@@ -86,8 +86,9 @@ class Corpus:
             New_Corpus.FD = FD_after
             return New_Corpus
     
-    def frequency_filter(self, path=None):
+    def frequency_filter(self, p_value, path=None):
         # filter out low frequency words: how to define low frequency words?
+        # use normal distrubution?
         for kc in utils.key_concepts:
             pass
 
