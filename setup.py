@@ -21,6 +21,16 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     package_dir={"": "src"},
-    packages=setuptools.find_packages(where="src"),
+    # packages=setuptools.find_packages(where="src"),
+    # install_requires=[
+    #     'numpy',
+    #     'matplotlib',
+    #     'nltk',
+    #     'spacy',
+    #     'Kkit @ git+https://github.com/erwinliyh/kylis_kit@main',
+    #     'pyenchant',
+    #     'tqdm'
+    # ],
+    package_data={"": ['src/data/*']},
     python_requires=">=3.6",
 )
