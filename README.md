@@ -2,6 +2,38 @@
 
 processing......
 
+## Environment setup
+
+Dev:
+```bash
+# fork the repo to your github
+
+git clone https://github.com/you_user_name/fwg
+
+conda create -n fw python=3.10 jupyter jupyterlab #optional
+
+conda activate fw                                 #optional
+
+pip install -r requirements.txt
+
+pip install -e git+https://github.com/explosion/spacy-models/releases/download/en_core_web_trf-3.5.0/en_core_web_trf-3.5.0-py3-none-any.whl
+
+pip install git+https://github.com/erwinliyh/kylis_kit@main
+
+python -c "import nltk;nltk.download("wordnet");nltk.download("stopwords")"
+
+# then develop code from FWG/src and debug using code in FWG/test
+```
+
+Runtime:
+```bash
+pip install -e git+https://github.com/explosion/spacy-models/releases/download/en_core_web_trf-3.5.0/en_core_web_trf-3.5.0-py3-none-any.whl
+
+pip install git+https://github.com/erwinliyh/fwg@main
+
+python -c "import nltk;nltk.download("wordnet");nltk.download("stopwords")"
+```
+
 ## start to use
 
 ```python
