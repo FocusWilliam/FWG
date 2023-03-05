@@ -115,7 +115,7 @@ class Corpus:
     def gen_td_vec(self):
     # token-document frequency matrix
         for fd in self.FD.content:
-            temp_vec = np.zeros(len(self.comments))
+            temp_vec = np.zeros(len(self.comments), dtype=np.uintc)
             for comment_id, count in fd.comment_id.items():
                 temp_vec[comment_id] = count
             fd.we_vec("token-doc", temp_vec)
