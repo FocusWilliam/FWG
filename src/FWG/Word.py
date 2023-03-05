@@ -49,7 +49,10 @@ class W:
         self.vecs[name] = vec
 
     def json_info(self):
-        return self.__dict__
+        temp_dict = self.__dict__
+        for k, v in temp_dict.items():
+            temp_dict[k] = np.array2string(v, separator=",")
+        return temp_dict
 
     def __eq__(self,other):
         return self.POS==other.POS and self.lemma==other.lemma
@@ -120,12 +123,24 @@ class Ngram(W):
 class Word_reload(Word):
     def __init__(self, json_dic):
         for k,v in json_dic.items():
-            self.__dict__[k] = v
+            if k!="vecs":
+                self.__dict__[k] = v
+            else:
+                temp_dict = {}
+                for k1 in json_dic[k].keys():
+                    temp_dict[k1] = np.fromstring(json_dic[k][k1], sep=',')
+                self.__dict__[k] = temp_dict
 
 class Ngram_reload(Ngram):
     def __init__(self, json_dic):
         for k,v in json_dic.items():
-            self.__dict__[k] = v
+            if k!="vecs":
+                self.__dict__[k] = v
+            else:
+                temp_dict = {}
+                for k1 in json_dic[k].keys():
+                    temp_dict[k1] = np.fromstring(json_dic[k][k1], sep=',')
+                self.__dict__[k] = temp_dict
 
 class Word_list:
     def __init__(self, words=None):
