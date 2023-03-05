@@ -51,7 +51,7 @@ class W:
     def json_info(self):
         temp_dict = self.__dict__
         for k, v in temp_dict.items():
-            temp_dict[k] = np.array2string(v, separator=",")
+            temp_dict[k] = np.array2string(v, separator=",").strip("[").strip("]")
         return temp_dict
 
     def __eq__(self,other):
