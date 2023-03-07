@@ -42,7 +42,9 @@ class Corpus:
                 Kkit.store(path, json_dic)
         return json_dic
 
-    def archive(self, path="./cache", format="json"):
+    def archive(self, path="./cache", format="bi"):
+        if format not in ["bi", "json"]:
+            raise Exception("format can only be bi or json, don't support %s"%format)
         timestr = Kkit.time_string()
         self.save_comments(os.path.join(path, "archive_comments_%s.%s"%(timestr ,format)))
         self.save_FDs(os.path.join(path, "archive_FD_%s.%s"%(timestr ,format)))
@@ -158,17 +160,21 @@ class Corpus:
         pass
 
 class Corpus_reload_bi(Corpus):
-    def __init__(self, path):
-        paths = utils.scan_archive(path)
+    def __init__(self, path, time_string=None):
+        paths = utils.scan_archive(path, time_string=time_string, format="bi")
         paths = [os.path.join(path, i) for i in paths]
+        print("load following archives:")
+        Kkit.print_list(paths, 1, verbose=False)
         self.comments = Kkit.load(paths[0])
         self.FD = Kkit.load(paths[1])
         self.vec_index = Kkit.load(paths[2])
 
 class Corpus_reload_json(Corpus):
-    def __init__(self, path):
-        paths = utils.scan_archive(path)
+    def __init__(self, path, time_string=None):
+        paths = utils.scan_archive(path, time_string=time_string, format="json")
         paths = [os.path.join(path, i) for i in paths]
+        print("load following archives:")
+        Kkit.print_list(paths, 1, verbose=False)
         self.comments = []
         comments = json.loads(Kkit.load(paths[0], encoding='utf-8'))
         for c in comments:

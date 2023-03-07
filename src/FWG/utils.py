@@ -141,9 +141,12 @@ def visual_key_concept_statistics(json_dic, n_col_limit=3):
             plt.bar(x, y)
             plt.title(k)
 
-def scan_archive(path, format="json", time_string=None):
+def scan_archive(path, time_string=None, format="json"):
     files = os.listdir(path)
-    files = [i.split("_") for i in files if re.fullmatch(r"archive_(comments|FD|key)_\d+\.[a-zA-Z]+", i)]
+    def split_second(string):
+        temp = string.split("_")
+        return ["_".join([temp[0], temp[1]]), temp[2]]
+    files = [split_second(i) for i in files if re.fullmatch(r"archive_(comments|FD|key)_\d+-\d+-\d+-\d+\.[a-zA-Z]+", i)]
     groups = {}
     for i in files:
         if i[1] in groups:
@@ -151,10 +154,12 @@ def scan_archive(path, format="json", time_string=None):
         else:
             groups[i[1]] = [i[0]]
     if len(groups)==1:
-        k, v = groups.items()
-        if len(v) == 3 and "archive_comments" in v and "archive_FD" in v and "archive_key" in v:
-            return "_".join("archive_comments",k), "_".join("archive_FD",k), "_".join("archive_key",k)
+        k, v = list(groups.items())[0]
+        if len(v) == 3 and "archive_comments" in v and "archive_FD" in v and "archive_key" in v and k.endswith(format):
+            return "_".join(["archive_comments",k]), "_".join(["archive_FD",k]), "_".join(["archive_key",k])
         else:
+            print("archives in %s"%path)
+            Kkit.print_list(files, 1, verbose=False)
             raise Exception("Wrong archive")
     else:
         if time_string==None:
@@ -162,8 +167,10 @@ def scan_archive(path, format="json", time_string=None):
         else:
             for k,v in groups.items():
                 if k.startswith(time_string):
-                    if len(v) == 3 and "archive_comments" in v and "archive_FD" in v and "archive_key" in v:
-                        return "_".join("archive_comments",k), "_".join("archive_FD",k), "_".join("archive_key",k)
+                    if len(v) == 3 and "archive_comments" in v and "archive_FD" in v and "archive_key" in v and k.endswith(format):
+                        return "_".join(["archive_comments",k]), "_".join(["archive_FD",k]), "_".join(["archive_key",k])
                     else:
+                        print("archives in %s"%path)
+                        Kkit.print_list(files, 1, verbose=False)
                         raise Exception("Wrong archive")
-            raise Exception("Can't find archive at %s")%time_string
+            raise Exception("Can't find archive at %s in %s"%(time_string, path))
