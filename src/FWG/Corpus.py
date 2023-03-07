@@ -44,8 +44,9 @@ class Corpus:
 
     def archive(self, path="./cache", format="json"):
         timestr = Kkit.time_string()
-        self.save_comments(os.path.join(path, "comments_%s.%s"%(timestr ,format)))
-        self.save_FDs(os.path.join(path, "FD_%s.%s"%(timestr ,format)))
+        self.save_comments(os.path.join(path, "archive_comments_%s.%s"%(timestr ,format)))
+        self.save_FDs(os.path.join(path, "archive_FD_%s.%s"%(timestr ,format)))
+        self.save_vec_index(os.path.join(path, "archive_key_%s.%s"%(timestr ,format)))
     
     def save_vec_index(self, path):
         if path.endswith(".json"):
@@ -157,19 +158,21 @@ class Corpus:
         pass
 
 class Corpus_reload_bi(Corpus):
-    def __init__(self, comments_path, FD_path):
-        self.comments = Kkit.load(comments_path)
-        self.FD = Kkit.load(FD_path)
+    def __init__(self, path):
+        paths = utils.scan_archive(path)
+        paths = [os.path.join(path, i) for i in paths]
+        self.comments = Kkit.load(paths[0])
+        self.FD = Kkit.load(paths[1])
+        self.vec_index = Kkit.load(paths[2])
 
 class Corpus_reload_json(Corpus):
-    def __init__(self, comments_path, FD_path):
-        # with open(comments_path, "r") as f:
-        #     c = json.loads(f.read(comments_path))
+    def __init__(self, path):
+        paths = utils.scan_archive(path)
+        paths = [os.path.join(path, i) for i in paths]
         self.comments = []
-        comments = json.loads(Kkit.load(comments_path, encoding='utf-8'))
+        comments = json.loads(Kkit.load(paths[0], encoding='utf-8'))
         for c in comments:
             comment = Comment.Comment_reload(c)
             self.comments.append(comment)
-        with open(FD_path, "r") as f:
-            f = json.loads(f.read())
-            self.FD = Word.Word_list_reload(f)
+        self.FD = Word.Word_list_reload(json.loads(Kkit.load(paths[1], encoding="utf-8")))
+        self.vec_index = json.loads(Kkit.load(paths[2], encoding="utf-8"))
