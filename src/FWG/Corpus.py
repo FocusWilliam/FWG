@@ -6,9 +6,11 @@ import Kkit
 import json
 import copy
 import numpy as np
+import os
 
 class Corpus:
     def __init__(self, comments, nlp_model, POS_candidate=["NN", "JJ", "phrase"], lexical_name=False, concepts_config=None):
+        self.vec_index = {}
         self.comments = []
         Words = Word.Word_list()
         Ngram = Word.Word_list()
@@ -40,9 +42,17 @@ class Corpus:
                 Kkit.store(path, json_dic)
         return json_dic
 
-    def archive(self, FD_path="./cache/comments.json", comments_path="./cache/FD.json"):
-        self.save_comments(comments_path)
-        self.save_FDs(FD_path)
+    def archive(self, path="./cache", format="json"):
+        timestr = Kkit.time_string()
+        self.save_comments(os.path.join(path, "comments_%s.%s"%(timestr ,format)))
+        self.save_FDs(os.path.join(path, "FD_%s.%s"%(timestr ,format)))
+    
+    def save_vec_index(self, path):
+        if path.endswith(".json"):
+            str_json = json.dumps(self.vec_index, indent=4)
+            Kkit.store(path, str_json, encoding="utf-8")
+        else:
+            Kkit.store(path, self.comments)
     
     def save_comments(self, path):
         if path.endswith(".json"):
@@ -131,7 +141,12 @@ class Corpus:
 
     def gen_tc_vec(self):
     # token-concept probability matrix
-        pass
+        # count concepts
+        for fd in self.FD.content:
+            pass
+        # concepts vector
+        for fd in self.FD.content:
+            pass
 
     def gen_GloVe_vec(self):
     # GloVe vector:
