@@ -12,7 +12,7 @@ from . import Probase
 from . import Concepts
 import math
 from matplotlib import pyplot as plt
-import re
+import numpy as np
 
 stops = stopwords.words('english')
 
@@ -141,36 +141,9 @@ def visual_key_concept_statistics(json_dic, n_col_limit=3):
             plt.bar(x, y)
             plt.title(k)
 
-def scan_archive(path, time_string=None, format="json"):
-    files = os.listdir(path)
-    def split_second(string):
-        temp = string.split("_")
-        return ["_".join([temp[0], temp[1]]), temp[2]]
-    files = [split_second(i) for i in files if re.fullmatch(r"archive_(comments|FD|key)_\d+-\d+-\d+-\d+\.[a-zA-Z]+", i)]
-    groups = {}
-    for i in files:
-        if i[1] in groups:
-            groups[i[1]].append(i[0])
-        else:
-            groups[i[1]] = [i[0]]
-    if len(groups)==1:
-        k, v = list(groups.items())[0]
-        if len(v) == 3 and "archive_comments" in v and "archive_FD" in v and "archive_key" in v and k.endswith(format):
-            return "_".join(["archive_comments",k]), "_".join(["archive_FD",k]), "_".join(["archive_key",k])
-        else:
-            print("archives in %s"%path)
-            Kkit.print_list(files, 1, verbose=False)
-            raise Exception("Wrong archive")
-    else:
-        if time_string==None:
-            raise Exception("multiple archives in same folder, time_string can't be empty")
-        else:
-            for k,v in groups.items():
-                if k.startswith(time_string):
-                    if len(v) == 3 and "archive_comments" in v and "archive_FD" in v and "archive_key" in v and k.endswith(format):
-                        return "_".join(["archive_comments",k]), "_".join(["archive_FD",k]), "_".join(["archive_key",k])
-                    else:
-                        print("archives in %s"%path)
-                        Kkit.print_list(files, 1, verbose=False)
-                        raise Exception("Wrong archive")
-            raise Exception("Can't find archive at %s in %s"%(time_string, path))
+def ndarray2string(ndarray):
+    return str(ndarray.dtype)+":"+np.array2string(ndarray, separator=",").strip("[").strip("]")
+
+def string2ndarray(ndarray_string):
+    dtype_value = ndarray_string.split(":")
+    return np.fromstring(dtype_value[1], sep=',', dtype=dtype_value[0])
