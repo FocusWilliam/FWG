@@ -52,7 +52,7 @@ class W:
     def json_info(self):
         temp_dict = copy.deepcopy(self.__dict__)
         for k, v in temp_dict["vecs"].items():
-            temp_dict["vecs"][k] = str(v.dtype)+":"+np.array2string(v, separator=",").strip("[").strip("]")
+            temp_dict["vecs"][k] = utils.ndarray2string(v)
         return temp_dict
 
     def __eq__(self,other):
@@ -129,8 +129,7 @@ class Word_reload(Word):
             else:
                 temp_dict = {}
                 for k1 in json_dic[k].keys():
-                    dtype_value = json_dic[k][k1].split(":")
-                    temp_dict[k1] = np.fromstring(dtype_value[1], sep=',', dtype=dtype_value[0])
+                    temp_dict[k1] = utils.string2ndarray(json_dic[k][k1])
                 self.__dict__[k] = temp_dict
 
 class Ngram_reload(Ngram):
@@ -141,8 +140,7 @@ class Ngram_reload(Ngram):
             else:
                 temp_dict = {}
                 for k1 in json_dic[k].keys():
-                    dtype_value = json_dic[k][k1].split(":")
-                    temp_dict[k1] = np.fromstring(dtype_value[1], sep=',', dtype=dtype_value[0])
+                    temp_dict[k1] = utils.string2ndarray(json_dic[k][k1])
                 self.__dict__[k] = temp_dict
 
 class Word_list:
