@@ -145,18 +145,22 @@ class Corpus:
     def gen_tc_vec(self):
     # token-concept probability matrix
         # count concepts
+        concepts = set()
         for fd in self.FD.content:
-            pass
+            for i in fd.top_concept.keys():
+                concepts.add(i)
+        concepts = list(concepts)
+        self.vec_index["concepts"] = concepts
         # concepts vector
         for fd in self.FD.content:
-            pass
+            temp_vec = np.zeros(len(concepts), dtype="float64")
+            for k,v in fd.top_concept.items():
+                temp_vec[concepts.index(k)] = v
+            fd.we_vec("concept", temp_vec)
+        return self
 
     def gen_GloVe_vec(self):
     # GloVe vector:
-        pass
-
-    def custom_vec(self, token_vec_map):
-    # customized vector
         pass
 
 class Corpus_reload_bi(Corpus):
