@@ -7,10 +7,16 @@ import json
 import copy
 import numpy as np
 import os
+import warnings
+from sklearn.decomposition import PCA
+from prince import CA
+import pandas as pd
 
 class Corpus:
     def __init__(self, comments, nlp_model, POS_candidate=["NN", "JJ"], phrase=True, lexical_name=False, concepts_config=None):
         self.vec_index = {}
+        self.ca = {}
+        self.pca = {}
         self.comments = []
         Words = Word.Word_list()
         Ngram = Word.Word_list()
@@ -49,6 +55,13 @@ class Corpus:
         self.save_comments(os.path.join(path, "archive-%s"%timestr, "comments.%s"%format))
         self.save_FDs(os.path.join(path, "archive-%s"%timestr, "FD.%s"%format))
         self.save_vec_index(os.path.join(path, "archive-%s"%timestr, "index.%s"%format))
+        self.save_bi(os.path.join(path, "archive-%s"%timestr, "bi"))
+
+    def save_bi(self, path):
+        try:
+            Kkit.store(path, {"pca":self.pca, "ca":self.ca})
+        except:
+            warnings.warn("saving pca, ca failed")
     
     def save_vec_index(self, path):
         if path.endswith(".json"):
@@ -134,13 +147,32 @@ class Corpus:
             fd.we_vec("token-doc", temp_vec)
         return self
 
-    def gen_PCA_vec(self):
+    def gen_PCA_vec(self, base_vec="token-doc", **pca_arg):
     # using PCA de-dimension td vec
-        pass
+        x = np.stack([i.vecs[base_vec] for i in self.FD.content])
+        pca = PCA(**pca_arg)
+        pca = pca.fit(x)
+        res = pca.transform(x)
+        self.pca[base_vec] = pca
+        res = res.tolist()
+        res = [np.array(i) for i in res]
+        for (fd, vec) in zip(self.FD.content, res):
+            fd.vecs[base_vec+"-PCA"] = vec
+        return self
 
-    def gen_CA_vec(self):
+    def gen_CA_vec(self, base_vec="token-doc", **ca_arg):
     # # using CA de-dimension td vec
-        pass
+        x = np.stack([i.vecs[base_vec] for i in self.FD.content])
+        x = pd.DataFrame(x)
+        ca = CA(**ca_arg)
+        ca = ca.fit(x)
+        res = ca.row_coordinates(x).values
+        self.ca[base_vec] = ca
+        res = res.tolist()
+        res = [np.array(i) for i in res]
+        for (fd, vec) in zip(self.FD.content, res):
+            fd.vecs[base_vec+"-CA"] = vec
+        return self
 
     def gen_tc_vec(self):
     # token-concept probability matrix
@@ -165,17 +197,20 @@ class Corpus:
 
 class Corpus_reload_bi(Corpus):
     def __init__(self, path):
-        paths = ["comments.bi", "FD.bi", "index.bi"]
+        paths = ["comments.bi", "FD.bi", "index.bi", "bi"]
         paths = [os.path.join(path, i) for i in paths]
         print("load following archives:")
         Kkit.print_list(paths, 1, verbose=False)
         self.comments = Kkit.load(paths[0])
         self.FD = Kkit.load(paths[1])
         self.vec_index = Kkit.load(paths[2])
+        bi = Kkit.load(paths[3])
+        self.ca = bi["ca"]
+        self.pca = bi["pca"]
 
 class Corpus_reload_json(Corpus):
     def __init__(self, path):
-        paths = ["comments.json", "FD.json", "index.json"]
+        paths = ["comments.json", "FD.json", "index.json", "bi"]
         paths = [os.path.join(path, i) for i in paths]
         print("load following archives:")
         Kkit.print_list(paths, 1, verbose=False)
@@ -186,3 +221,6 @@ class Corpus_reload_json(Corpus):
             self.comments.append(comment)
         self.FD = Word.Word_list_reload(json.loads(Kkit.load(paths[1], encoding="utf-8")))
         self.vec_index = json.loads(Kkit.load(paths[2], encoding="utf-8"))
+        bi = Kkit.load(paths[3])
+        self.ca = bi["ca"]
+        self.pca = bi["pca"]
