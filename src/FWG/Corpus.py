@@ -9,13 +9,13 @@ import numpy as np
 import os
 
 class Corpus:
-    def __init__(self, comments, nlp_model, POS_candidate=["NN", "JJ", "phrase"], lexical_name=False, concepts_config=None):
+    def __init__(self, comments, nlp_model, POS_candidate=["NN", "JJ"], phrase=True, lexical_name=False, concepts_config=None):
         self.vec_index = {}
         self.comments = []
         Words = Word.Word_list()
         Ngram = Word.Word_list()
         for index, comm in enumerate(tqdm(comments)):
-            new_comment = Comment.Comment(comm, nlp_model, index, POS_candidate, lexical_name, concepts_config)
+            new_comment = Comment.Comment(comm, nlp_model, index, POS_candidate, phrase, lexical_name, concepts_config)
             self.comments.append(new_comment)
             for i in new_comment.Words.content:
                 Words.append(i, deepcopy=True)
