@@ -33,10 +33,16 @@ class Word2vec_model:
             raise Exception("Please load a model")
         vec = None
         try:
-            vec = self.model.get_vector(W.lemma)
+            if isinstance(W, str):
+                vec = self.model.get_vector(W)
+            else:
+                vec = self.model.get_vector(W.lemma)
         except KeyError:
             try:
-                vec = self.model.get_vector(W.root)
+                if isinstance(W, str):
+                    vec = self.model.get_vector(W)
+                else:
+                    vec = self.model.get_vector(W.lemma)
             except AttributeError:
                 self.error.append(W)
         return vec
