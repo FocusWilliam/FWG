@@ -61,17 +61,16 @@ print(c.comments)
 ### Functions
 
 - [ ] Finish Corpus.py
-
   - [ ] assess_FD()
-- [ ] frequency_filter()
+  - [ ] frequency_filter()
   - [x] POS filter
-- [x] concept filter
+  - [x] concept filter
   - [x] static_key_concept()
-- [x] gen_td_vec()
+  - [x] gen_td_vec()
   - [x] gen_PCA_vec()
-- [x] gen_CA_vec()
+  - [x] gen_CA_vec()
   - [x] gen_tc_vec()
-- [x] gen_GloVe_vec()
+  - [x] gen_GloVe_vec()
 - [x] Finish display.py: for more good visualisation of FD extraction (move to utlils.py)
 
 ### test
