@@ -191,9 +191,10 @@ class Corpus:
             fd.we_vec("concept", temp_vec)
         return self
 
-    def gen_GloVe_vec(self):
+    def gen_GloVe_vec(self, Word2vec_model):
     # GloVe vector:
-        pass
+        for fd in self.fd.content:
+            fd.we_vec("glove", Word2vec_model.vectorize(fd))
 
 class Corpus_reload_bi(Corpus):
     def __init__(self, path):

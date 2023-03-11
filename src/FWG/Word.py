@@ -44,7 +44,7 @@ class W:
         self.key_concepts = list(set([i[-1] for i in self.key_concept_chain]))
 
     def we_vec(self, name, vec):
-        if isinstance(vec, np.ndarray) == False:
+        if isinstance(vec, np.ndarray) == False and vec==None:
             print("vec class error, vec must be numpy.ndarray")
             return
         self.vecs[name] = vec
