@@ -63,30 +63,17 @@ print(c.comments)
 - [ ] Finish Corpus.py
 
   - [ ] assess_FD()
-
-  - [ ] frequency_filter()
-
-  - [ ] static_key_concept()
-
-  - [ ] gen_td_vec()
-
-  - [ ] gen_PCA_vec()
-
-  - [ ] gen_CA_vec()
-
-  - [ ] gen_tc_vec()
-
-  - [ ] gen_GloVe_vec()
-
-  - [ ] custom_vec()
-
-- [ ] Finish display.py: for more good visualisation of FD extraction
-
-Finished:
-
-- POS filter
-- concept filter
+- [ ] frequency_filter()
+  - [x] POS filter
+- [x] concept filter
+  - [x] static_key_concept()
+- [x] gen_td_vec()
+  - [x] gen_PCA_vec()
+- [x] gen_CA_vec()
+  - [x] gen_tc_vec()
+- [x] gen_GloVe_vec()
+- [x] Finish display.py: for more good visualisation of FD extraction (move to utlils.py)
 
 ### test
 
-- [ ] test reload class
+- [x] test reload class
