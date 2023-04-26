@@ -122,16 +122,19 @@ class Corpus:
         for kc in utils.key_concepts:
             counts = [w.count for w in self.FD.content]
             words = [w for w in self.FD.content if kc in w.key_concepts]
-            mean = np.mean(counts)
-            std = np.std(counts)
-            z_scores = [(freq - mean) / std for freq in counts]
-            p_values = [stats.norm.cdf(z) for z in z_scores]
-            remove = [word for word, p in zip(words, p_values) if p >= p_value]
-            for i in remove:
-                if i in filter_out:
-                    pass
-                else:
-                    filter_out.append(i)
+            if len(words)>0 and len(counts)>0:
+                mean = np.mean(counts)
+                std = np.std(counts)
+                z_scores = [(freq - mean) / std for freq in counts]
+                p_values = [stats.norm.cdf(z) for z in z_scores]
+                remove = [word for word, p in zip(words, p_values) if p < p_value]
+                for i in remove:
+                    if i in filter_out:
+                        pass
+                    else:
+                        filter_out.append(i)
+            else:
+                pass
         if path!=None:
             filter_out = Word.Word_list(filter_out)
             FD_after = Word.Word_list([i for i in self.FD.content if i not in filter_out.content])
