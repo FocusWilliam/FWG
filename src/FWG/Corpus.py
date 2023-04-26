@@ -6,6 +6,7 @@ import Kkit
 import json
 import copy
 import numpy as np
+import scipy.stats as stats
 import os
 import warnings
 from sklearn.decomposition import PCA
@@ -113,11 +114,41 @@ class Corpus:
             New_Corpus.FD = FD_after
             return New_Corpus
     
-    def frequency_filter(self, p_value, path=None):
+    def frequency_filter(self, p_value, path=None, replace=True):
         # filter out low frequency words: how to define low frequency words?
-        # use normal distrubution?
+        # use normal distrubution in this version
+        # null hypothesis: the frequency of a word is significantly lower than average
+        filter_out = []
         for kc in utils.key_concepts:
-            pass
+            counts = [w.count for w in self.FD.content]
+            words = [w for w in self.FD.content if kc in w.key_concepts]
+            mean = np.mean(counts)
+            std = np.std(counts)
+            z_scores = [(freq - mean) / std for freq in counts]
+            p_values = [stats.norm.cdf(z) for z in z_scores]
+            remove = [word for word, p in zip(words, p_values) if p >= p_value]
+            for i in remove:
+                if i in filter_out:
+                    pass
+                else:
+                    filter_out.append(i)
+        if path!=None:
+            filter_out = Word.Word_list(filter_out)
+            FD_after = Word.Word_list([i for i in self.FD.content if i not in filter_out.content])
+            archive = {"before": self.FD.json_info(), "after": FD_after.json_info(), "filter_out":filter_out.json_info()}
+            if path.endswith(".json"):
+                str_json = json.dumps(archive, indent=4)
+                with open(path, "w") as f:
+                    f.write(str_json)
+            else:
+                Kkit.store(path, archive)
+        if replace:
+            self.FD = FD_after
+            return self
+        else:
+            New_Corpus = copy.deepcopy(self)
+            New_Corpus.FD = FD_after
+            return New_Corpus
 
     def spell_filter(self, dictionary, path=None, replace=True):
         FD_after = Word.Word_list([word for word in self.FD.content if dictionary.check(word.lemma)])
@@ -157,7 +188,7 @@ class Corpus:
         res = res.tolist()
         res = [np.array(i) for i in res]
         for (fd, vec) in zip(self.FD.content, res):
-            fd.vecs[base_vec+"-PCA"] = vec
+            fd.we_vec(base_vec+"-PCA", vec)
         return self
 
     def gen_CA_vec(self, base_vec="token-doc", **ca_arg):
@@ -171,7 +202,7 @@ class Corpus:
         res = res.tolist()
         res = [np.array(i) for i in res]
         for (fd, vec) in zip(self.FD.content, res):
-            fd.vecs[base_vec+"-CA"] = vec
+            fd.we_vec(base_vec+"-CA", vec)
         return self
 
     def gen_tc_vec(self):
