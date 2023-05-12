@@ -53,33 +53,33 @@ def get_lexical_file_name(single_token, pos=wn.NOUN):
     return lexname_list
 
 def get_concept_prob(word, num, cache_path = "./cache/MCG", probase = None) -> dict:
-    cache_list = []
-    try:
-        cache_list = os.listdir(cache_path)
-    except:
-        os.makedirs(cache_path)
-    if "%s_%d"%(word,num) in cache_list:
-        res = Kkit.load(os.path.join(cache_path, "%s_%d"%(word,num)))
-        return res
-    else:
-        if probase == None:
-            link = requests.get("https://concept.research.microsoft.com/api/Concept/ScoreByProb?instance=%s&topK=%d"%(word, num), verify=False)
-            if link.status_code == 200:
-                res = json.loads(link.text)
-                Kkit.store(os.path.join(cache_path,"%s_%d"%(word,num)),res)
+    if probase == None: #use web
+        if cache_path: # try to load cache
+            cache_list = []
+            try:
+                cache_list = os.listdir(cache_path)
+            except:
+                os.makedirs(cache_path)
+            if "%s_%d"%(word,num) in cache_list:
+                res = Kkit.load(os.path.join(cache_path, "%s_%d"%(word,num)))
                 return res
-            else:
-                raise Exception("code: %d"%link.status_code)
-        else:
-            res = {}
-            concept_list = probase.conceptualize(word, score_method="likelihood")[:num]
-            total = 0
-            for i in concept_list:
-                total+=i[1]
-            for i in concept_list:
-                res[i[0]] = i[1]/total
-            Kkit.store(os.path.join(cache_path,"%s_%d"%(word,num)),res)
+        link = requests.get("https://concept.research.microsoft.com/api/Concept/ScoreByProb?instance=%s&topK=%d"%(word, num), verify=False)
+        if link.status_code == 200:
+            res = json.loads(link.text)
+            if cache_path: # try to store cache
+                Kkit.store(os.path.join(cache_path,"%s_%d"%(word,num)),res)
             return res
+        else:
+            raise Exception("code: %d"%link.status_code)
+    else: #use local model
+        res = {}
+        concept_list = probase.conceptualize(word, score_method="likelihood")[:num]
+        total = 0
+        for i in concept_list:
+            total+=i[1]
+        for i in concept_list:
+            res[i[0]] = i[1]/total
+        return res
 
 def build_key_concept_chain(word, layers, cache_path = "./cache/MCG", probase = None):
     paths = []
