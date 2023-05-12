@@ -37,9 +37,9 @@ class W:
             if token not in self.tokens:
                 self.tokens.append(token)
 
-    def get_concepts(self, num, layers, cache_path = "./cache/MCG", probase = None):
-        self.top_concept = utils.get_concept_prob(self.lemma, num=num, cache_path=cache_path, probase=probase)
-        self.key_concept_chain = utils.build_key_concept_chain(self.lemma, layers, cache_path=cache_path, probase = probase)
+    def get_concepts(self, concepts_config):
+        self.top_concept = utils.get_concept_prob(self.lemma, num=concepts_config.num, cache_path=concepts_config.cache_path, probase=concepts_config.probase)
+        self.key_concept_chain = utils.build_key_concept_chain(self.lemma, concepts_config.layers, cache_path=concepts_config.cache_path, probase = concepts_config.probase)
         self.key_concepts = list(set([i[-1] for i in self.key_concept_chain]))
 
     def we_vec(self, name, vec):
@@ -68,7 +68,7 @@ class Word(W):
             self.get_lexical_name()
 
         if concepts_config!=None:
-            self.get_concepts(concepts_config.num, concepts_config.layers, concepts_config.cache_path, concepts_config.probase)
+            self.get_concepts(concepts_config)
 
     # def json_info(self):
     #     return {"token": self.tokens, "lemma": self.lemma, "POS": self.POS, "count": self.count, "WN_laxical_names": self.WN_laxical_names, "comment_id": self.comment_id,
@@ -90,7 +90,7 @@ class Ngram(W):
             self.get_lexical_name()
 
         if concepts_config!=None:
-            self.get_concepts(concepts_config.num, concepts_config.layers, concepts_config.cache_path, concepts_config.probase)
+            self.get_concepts(concepts_config)
 
     # def json_info(self):
         # return {"token": self.tokens, "lemma": self.lemma, "POS": self.POS, "root": self.root, "N": self.N, "WN_laxical_names": self.WN_laxical_names, "comment_id": self.comment_id,
