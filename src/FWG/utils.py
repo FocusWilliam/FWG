@@ -42,7 +42,7 @@ def init_probase(path, binary=False):
         probase = Probase.ProbaseConcept(path)
     return probase
 
-def init_spacy_nlp(model="en_core_web_trf"):
+def init_spacy_nlp(model="en_core_web_lg"):
     nlp = spacy.load(model)
     # if phrase:
     #     nlp.add_pipe("textrank")
