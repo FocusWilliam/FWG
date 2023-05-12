@@ -2,7 +2,6 @@ from . import utils
 import copy
 import json
 import numpy as np
-import copy
 
 class W:
     def __init__(self, token, lemma, POS, comment_id):

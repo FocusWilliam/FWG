@@ -1,0 +1,14 @@
+en_core_web_trf @ https://github.com/explosion/spacy-models/releases/download/en_core_web_trf-3.5.0/en_core_web_trf-3.5.0-py3-none-any.whl
+Kkit @ git+https://github.com/erwinliyh/kylis_kit@main
+tqdm
+numpy
+scipy
+scikit-learn
+prince
+pandas
+gensim
+pyenchant
+requests
+nltk
+spacy
+matplotlib
