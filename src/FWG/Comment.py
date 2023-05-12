@@ -16,9 +16,9 @@ class Comment:
             noun_chunks = doc.noun_chunks
             # if len(noun_chunks)!=0:
             noun_chunks = [chunk for chunk in noun_chunks if (chunk.end-chunk.start==2)] # only keep noun phrase with length 2
-            noun_chunks = [chunk for chunk in noun_chunks if Kkit.list_in_list(chunk.lemma_.split(" "), utils.stops, X="any")==False] # remove noun phrase with stop words
+            noun_chunks = [chunk for chunk in noun_chunks if Kkit.list_in_list(chunk.lemma_.split(" "), utils.stops, X="any")==False and utils.is_only_az_AZ(chunk.lemma_)] # remove noun phrase with stop words
         # all tokens
-        tokens = [word for word in doc if (word.tag_ in POS_candidate) and (word.lemma_ not in utils.stops)]
+        tokens = [word for word in doc if (word.tag_ in POS_candidate) and (word.lemma_ not in utils.stops) and utils.is_only_az_AZ(word.lemma_)]
         # delete overlap between tokens and phrases
         for chunk in noun_chunks:
             tokens = [word for word in tokens if (word.i<chunk.start or word.i>=chunk.end)]

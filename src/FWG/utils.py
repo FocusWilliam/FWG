@@ -147,3 +147,6 @@ def ndarray2string(ndarray):
 def string2ndarray(ndarray_string):
     dtype_value = ndarray_string.split(":")
     return np.fromstring(dtype_value[1], sep=',', dtype=dtype_value[0])
+
+def is_only_az_AZ(s):
+    return all(c.isalpha() or c==" " for c in s)
