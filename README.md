@@ -31,6 +31,8 @@ comments = ["I love apples, not the apple phone", "Green apple is a type of appl
 
 c = Corpus.Corpus(comments, nlp, lexical_name=True, concepts_config=probase_config)
 
+
+
 print(c.FD)
 
 print(c.comments)

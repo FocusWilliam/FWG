@@ -4,13 +4,13 @@ from . import Word
 import json
 
 class Comment:
-    def __init__(self, string, nlp_model, comment_id, POS_candidate=["NN", "JJ"], phrase=True, lexical_name=False, concepts_config=None):
-        self.string = string
+    def __init__(self, doc, comment_id, POS_candidate=["NN", "JJ"], phrase=True, lexical_name=False, concepts_config=None):
+        # self.doc = doc
         self.comment_id = comment_id
         self.Words = Word.Word_list()
         self.Ngram = Word.Word_list()
 
-        doc = nlp_model(self.string)
+        # doc = nlp_model(self.string)
         if phrase:
             # all noun phrases
             noun_chunks = doc.noun_chunks

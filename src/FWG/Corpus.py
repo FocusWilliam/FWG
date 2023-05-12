@@ -14,15 +14,17 @@ from prince import CA
 import pandas as pd
 
 class Corpus:
-    def __init__(self, comments, nlp_model, POS_candidate=["NN", "JJ"], phrase=True, lexical_name=False, concepts_config=None):
+    def __init__(self, comments, nlp_model, POS_candidate=["NN", "JJ"], phrase=True, lexical_name=False, concepts_config=None, n_process=-1, batch_size=100):
         self.vec_index = {}
         self.ca = {}
         self.pca = {}
         self.comments = []
         Words = Word.Word_list()
         Ngram = Word.Word_list()
-        for index, comm in enumerate(tqdm(comments)):
-            new_comment = Comment.Comment(comm, nlp_model, index, POS_candidate, phrase, lexical_name, concepts_config)
+
+        docs = [i for i in nlp_model.pipe(comments, n_process=n_process, batch_size=batch_size)]
+        for index, doc in enumerate(tqdm(docs)):
+            new_comment = Comment.Comment(doc, index, POS_candidate, phrase, lexical_name, concepts_config)
             self.comments.append(new_comment)
             for i in new_comment.Words.content:
                 Words.append(i, deepcopy=True)
@@ -56,7 +58,7 @@ class Corpus:
         self.save_comments(os.path.join(path, "archive-%s"%timestr, "comments.%s"%format))
         self.save_FDs(os.path.join(path, "archive-%s"%timestr, "FD.%s"%format))
         self.save_vec_index(os.path.join(path, "archive-%s"%timestr, "index.%s"%format))
-        self.save_bi(os.path.join(path, "archive-%s"%timestr, "pca_ca_models.bi"))
+        self.save_pca_ca_bi(os.path.join(path, "archive-%s"%timestr, "pca_ca_models.bi"))
 
     def save_pca_ca_bi(self, path):
         try:
