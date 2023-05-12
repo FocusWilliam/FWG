@@ -56,9 +56,9 @@ class Corpus:
         self.save_comments(os.path.join(path, "archive-%s"%timestr, "comments.%s"%format))
         self.save_FDs(os.path.join(path, "archive-%s"%timestr, "FD.%s"%format))
         self.save_vec_index(os.path.join(path, "archive-%s"%timestr, "index.%s"%format))
-        self.save_bi(os.path.join(path, "archive-%s"%timestr, "bi"))
+        self.save_bi(os.path.join(path, "archive-%s"%timestr, "pca_ca_models.bi"))
 
-    def save_bi(self, path):
+    def save_pca_ca_bi(self, path):
         try:
             Kkit.store(path, {"pca":self.pca, "ca":self.ca})
         except:
@@ -69,7 +69,7 @@ class Corpus:
             str_json = json.dumps(self.vec_index, indent=4)
             Kkit.store(path, str_json, encoding="utf-8")
         else:
-            Kkit.store(path, self.comments)
+            Kkit.store(path, self.vec_index)
     
     def save_comments(self, path):
         if path.endswith(".json"):
@@ -232,7 +232,7 @@ class Corpus:
 
 class Corpus_reload_bi(Corpus):
     def __init__(self, path):
-        paths = ["comments.bi", "FD.bi", "index.bi", "bi"]
+        paths = ["comments.bi", "FD.bi", "index.bi", "pca_ca_models.bi"]
         paths = [os.path.join(path, i) for i in paths]
         print("load following archives:")
         Kkit.print_list(paths, 1, verbose=False)
@@ -245,7 +245,7 @@ class Corpus_reload_bi(Corpus):
 
 class Corpus_reload_json(Corpus):
     def __init__(self, path):
-        paths = ["comments.json", "FD.json", "index.json", "bi"]
+        paths = ["comments.json", "FD.json", "index.json", "pca_ca_models.bi"]
         paths = [os.path.join(path, i) for i in paths]
         print("load following archives:")
         Kkit.print_list(paths, 1, verbose=False)
