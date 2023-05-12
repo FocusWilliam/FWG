@@ -59,6 +59,7 @@ class Corpus:
         self.save_FDs(os.path.join(path, "archive-%s"%timestr, "FD.%s"%format))
         self.save_vec_index(os.path.join(path, "archive-%s"%timestr, "index.%s"%format))
         self.save_pca_ca_bi(os.path.join(path, "archive-%s"%timestr, "pca_ca_models.bi"))
+        print("Archive to %s"%os.path.join(path, "archive-%s"%timestr))
 
     def save_pca_ca_bi(self, path):
         try:
