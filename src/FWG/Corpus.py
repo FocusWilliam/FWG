@@ -138,9 +138,9 @@ class Corpus:
                         filter_out.append(i)
             else:
                 pass
+        filter_out = Word.Word_list(filter_out)
+        FD_after = Word.Word_list([i for i in self.FD.content if i not in filter_out.content])
         if path!=None:
-            filter_out = Word.Word_list(filter_out)
-            FD_after = Word.Word_list([i for i in self.FD.content if i not in filter_out.content])
             archive = {"before": self.FD.json_info(), "after": FD_after.json_info(), "filter_out":filter_out.json_info()}
             if path.endswith(".json"):
                 str_json = json.dumps(archive, indent=4)
@@ -201,6 +201,8 @@ class Corpus:
     # # using CA de-dimension td vec
         x = np.stack([i.vecs[base_vec] for i in self.FD.content])
         x = pd.DataFrame(x)
+        columns_to_remove = [column for column in x.columns if (x[column] == 0).all()]
+        x.drop(columns=columns_to_remove, inplace=True)
         ca = CA(**ca_arg)
         ca = ca.fit(x)
         res = ca.row_coordinates(x).values
@@ -230,7 +232,7 @@ class Corpus:
 
     def gen_GloVe_vec(self, Word2vec_model):
     # GloVe vector:
-        for fd in self.fd.content:
+        for fd in self.FD.content:
             fd.we_vec("glove", Word2vec_model.vectorize(fd))
 
 class Corpus_reload_bi(Corpus):
