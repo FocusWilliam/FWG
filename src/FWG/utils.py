@@ -142,7 +142,7 @@ def visual_key_concept_statistics(json_dic, n_col_limit=3):
             plt.title(k)
 
 def ndarray2string(ndarray):
-    return str(ndarray.dtype)+":"+np.array2string(ndarray, separator=",").strip("[").strip("]")
+    return str(ndarray.dtype)+":"+np.array2string(ndarray, separator=",", threshold=np.inf).strip("[").strip("]")
 
 def string2ndarray(ndarray_string):
     dtype_value = ndarray_string.split(":")
