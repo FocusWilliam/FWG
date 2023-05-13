@@ -43,10 +43,10 @@ class W:
         self.key_concepts = list(set([i[-1] for i in self.key_concept_chain]))
 
     def we_vec(self, name, vec):
-        if isinstance(vec, np.ndarray) == False and vec==None:
+        if isinstance(vec, np.ndarray) == False:
             print("vec class error, vec must be numpy.ndarray")
-            return
-        self.vecs[name] = vec
+        else:
+            self.vecs[name] = vec
 
     def json_info(self):
         temp_dict = copy.deepcopy(self.__dict__)
@@ -78,7 +78,10 @@ class Word(W):
         self.WN_laxical_names = utils.get_lexical_file_name(self.lemma)
 
     def __str__(self):
-        return json.dumps(self.json_info(), indent=4)
+        info_dic = self.json_info()
+        vecs = {i:"...vector..." for i,_ in info_dic["vecs"].items()}
+        info_dic["vecs"] = vecs
+        return json.dumps(info_dic, indent=4)
 
 class Ngram(W):
     def __init__(self, token, lemma, root, POS, N, comment_id, lexical_name=False, concepts_config=None):
@@ -118,7 +121,10 @@ class Ngram(W):
         self.WN_laxical_names = utils.get_lexical_file_name(self.root)
     
     def __str__(self):
-        return json.dumps(self.json_info(), indent=4)
+        info_dic = self.json_info()
+        vecs = {i:"...vector..." for i,_ in info_dic["vecs"].items()}
+        info_dic["vecs"] = vecs
+        return json.dumps(info_dic, indent=4)
 
 class Word_reload(Word):
     def __init__(self, json_dic):
