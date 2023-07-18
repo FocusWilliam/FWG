@@ -14,7 +14,7 @@ class Word2vec_model:
         for i in candidate_model:
             if i.startswith("_") == False:
                 if i in downloaded_model and i!=self.model_name:
-                    info += (i+"*"+"\n")
+                    info += (i+"*"+"\n")        #这个*是什么意思
                 elif i==self.model_name:
                     info += (i+"**"+"\n")
                 else:
